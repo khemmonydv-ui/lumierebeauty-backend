@@ -1,4 +1,4 @@
-package com.flashsolution.lumierebeauty_backend;
+package com.flashsolution.lumierebeauty;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
