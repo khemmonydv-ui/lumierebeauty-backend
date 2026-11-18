@@ -28,21 +28,30 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
-    // 2. Get all users
+    // 2. Login user
+    @PostMapping("/login")
+    public ResponseEntity<User> loginUser(@RequestBody User loginRequest) {
+
+        User loggedInUser = userService.loginUser(loginRequest);
+
+        return ResponseEntity.ok(loggedInUser);
+    }
+
+    // 3. Get all users
     @GetMapping
     public List<User> getAllUsers() {
 
         return userService.getAllUsers();
     }
 
-    // 3. Get user by ID
+    // 4. Get user by ID
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
 
         return userService.getUserById(id);
     }
 
-    // 4. Update user
+    // 5. Update user
     @PutMapping("/{id}")
     public User updateUser(
             @PathVariable Long id,
@@ -51,7 +60,7 @@ public class UserController {
         return userService.updateUser(id, updatedUser);
     }
 
-    // 5. Delete user
+    // 6. Delete user
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 

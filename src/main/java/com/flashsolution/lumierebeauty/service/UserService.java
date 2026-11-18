@@ -14,6 +14,7 @@ import java.util.List;
 @Service
 public class UserService {
 
+    // 1. Repository and password encoder
     private final UserRepository userRepository;
 
     private final BCryptPasswordEncoder passwordEncoder =
@@ -23,7 +24,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    // 1. Register a new customer
+    // 2. Register a new customer
     public User createUser(User user) {
 
         if (user.getName() == null || user.getName().isBlank()
@@ -64,12 +65,50 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    // 2. Get all users
+    // 3. Login user
+    public User loginUser(User loginRequest) {
+
+        if (loginRequest.getEmail() == null
+                || loginRequest.getEmail().isBlank()
+                || loginRequest.getPassword() == null
+                || loginRequest.getPassword().isBlank()) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Email and password are required"
+            );
+        }
+
+        // Find user by email
+        String email = loginRequest.getEmail().trim().toLowerCase();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Invalid email or password"
+                ));
+
+        // Check password
+        if (!passwordEncoder.matches(
+                loginRequest.getPassword(),
+                user.getPassword()
+        )) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid email or password"
+            );
+        }
+
+        return user;
+    }
+
+    // 4. Get all users
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    // 3. Get user by ID
+    // 5. Get user by ID
     public User getUserById(Long id) {
 
         return userRepository.findById(id)
@@ -79,7 +118,7 @@ public class UserService {
                 ));
     }
 
-    // 4. Update user
+    // 6. Update user
     public User updateUser(Long id, User updatedUser) {
 
         User existingUser = getUserById(id);
@@ -109,6 +148,7 @@ public class UserService {
         existingUser.setName(updatedUser.getName().trim());
         existingUser.setEmail(email);
 
+        // Update password only when a new password is provided
         if (updatedUser.getPassword() != null
                 && !updatedUser.getPassword().isBlank()) {
 
@@ -127,7 +167,7 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
-    // 5. Delete user
+    // 7. Delete user
     public void deleteUser(Long id) {
 
         User user = getUserById(id);
