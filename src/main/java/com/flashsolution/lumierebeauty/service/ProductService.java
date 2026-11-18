@@ -19,7 +19,26 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
+    }
+
+    public
+     Product getProductById(Long id) {
+        return productRepository.findById(id).orElse(null);
+    }
     public Product createProduct(Product product) {
         return productRepository.save(product);
+    }
+    public Product updateProduct(Long id, Product updatedProduct) {
+        return productRepository.findById(id)
+                .map(product -> {
+                    product.setName(updatedProduct.getName());
+                    product.setDescription(updatedProduct.getDescription());
+                    product.setPrice(updatedProduct.getPrice());
+                    product.setBrand(updatedProduct.getBrand());
+                    return productRepository.save(product);
+                })
+                .orElse(null);
     }
 }

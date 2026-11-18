@@ -32,5 +32,13 @@ import jakarta.persistence.*;
         public void setImageUrl(String imageUrl) {
             this.imageUrl = imageUrl;
         }
+        public Object getDescription() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'getDescription'");
+        }
+        public void setDescription(Object description) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'setDescription'");
+        }
 
     }   

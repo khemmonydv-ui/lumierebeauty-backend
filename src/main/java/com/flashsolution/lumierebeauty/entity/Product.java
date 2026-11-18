@@ -46,4 +46,12 @@ public class Product {
         public void setQuantity(Integer quantity) {
             this.quantity = quantity;
         }
+        public Object getBrand() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'getBrand'");
+        }
+        public void setBrand(Object brand) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'setBrand'");
+        }
 }
