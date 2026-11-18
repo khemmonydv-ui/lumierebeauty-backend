@@ -11,6 +11,8 @@ import jakarta.persistence.*;
         private String name;
 
         private String imageUrl;
+
+        private String description;
         // Constructors, getters, and setters
         public Brand() {
         }
@@ -32,13 +34,11 @@ import jakarta.persistence.*;
         public void setImageUrl(String imageUrl) {
             this.imageUrl = imageUrl;
         }
-        public Object getDescription() {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'getDescription'");
+        public String getDescription() {
+            return description;
         }
-        public void setDescription(Object description) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'setDescription'");
+        public void setDescription(String description) {
+            this.description = description;
         }
 
     }   

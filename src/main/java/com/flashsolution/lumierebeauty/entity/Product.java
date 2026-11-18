@@ -1,7 +1,6 @@
 package com.flashsolution.lumierebeauty.entity;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "products")
@@ -13,6 +12,14 @@ public class Product {
         private String description;
         private Double price;
         private Integer quantity;
+
+        @ManyToOne
+        @JoinColumn(name = "category_id")
+        private Category category;
+
+        @ManyToOne
+        @JoinColumn(name = "brand_id")
+        private Brand brand;
 
         public  Product() {
         }
@@ -46,12 +53,16 @@ public class Product {
         public void setQuantity(Integer quantity) {
             this.quantity = quantity;
         }
-        public Object getBrand() {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'getBrand'");
+        public Category getCategory() {
+            return category;
         }
-        public void setBrand(Object brand) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'setBrand'");
+        public void setCategory(Category category) {
+            this.category = category;
+        }
+        public Brand getBrand() {
+            return brand;
+        }
+        public void setBrand(Brand brand) {
+            this.brand = brand;
         }
 }

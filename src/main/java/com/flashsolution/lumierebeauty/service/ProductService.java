@@ -10,7 +10,9 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
-
+    public List<Product> getProductsByCategoryName(String categoryName) {
+        return productRepository.findByCategoryName(categoryName);
+    }
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
@@ -36,6 +38,8 @@ public class ProductService {
                     product.setName(updatedProduct.getName());
                     product.setDescription(updatedProduct.getDescription());
                     product.setPrice(updatedProduct.getPrice());
+                    product.setQuantity(updatedProduct.getQuantity());
+                    product.setCategory(updatedProduct.getCategory());
                     product.setBrand(updatedProduct.getBrand());
                     return productRepository.save(product);
                 })

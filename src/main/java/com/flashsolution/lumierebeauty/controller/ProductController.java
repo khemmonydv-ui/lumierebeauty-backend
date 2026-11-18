@@ -23,9 +23,16 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+
     @PostMapping                                                                                                                            
     @ResponseStatus(HttpStatus.CREATED)
     public Product createProduct(@RequestBody Product product) {
         return productService.createProduct(product);
+    }
+    @GetMapping("/category")
+    public List<Product> filterByCategory(
+        @RequestParam String  name
+    ){
+        return productService.getProductsByCategoryName(name);
     }
 }
