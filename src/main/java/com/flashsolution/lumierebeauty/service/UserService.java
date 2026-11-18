@@ -2,6 +2,7 @@ package com.flashsolution.lumierebeauty.service;
 
 import com.flashsolution.lumierebeauty.entity.User;
 import com.flashsolution.lumierebeauty.entity.Role;
+import com.flashsolution.lumierebeauty.entity.UserStatus;
 import com.flashsolution.lumierebeauty.repository.UserRepository;
 
 import org.springframework.stereotype.Service;
@@ -14,7 +15,6 @@ import java.util.List;
 @Service
 public class UserService {
 
-    // 1. Repository and password encoder
     private final UserRepository userRepository;
 
     private final BCryptPasswordEncoder passwordEncoder =
@@ -24,43 +24,48 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    // 2. Register a new customer
+    // 1. Public registration: always create CUSTOMER
     public User createUser(User user) {
 
-        if (user.getName() == null || user.getName().isBlank()
-                || user.getEmail() == null || user.getEmail().isBlank()
-                || user.getPassword() == null || user.getPassword().isBlank()) {
+        validateUser(user);
 
+        String email = user.getEmail().trim().toLowerCase();
+
+        checkEmailExists(email);
+
+        user.setId(null);
+        user.setName(user.getName().trim());
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // Public registration cannot create ADMIN
+        user.setRole(Role.CUSTOMER);
+        user.setStatus(UserStatus.ACTIVE);
+
+        return userRepository.save(user);
+    }
+
+    // 2. Admin creates a CUSTOMER or ADMIN
+    public User createAdminUser(User user) {
+
+        validateUser(user);
+
+        if (user.getRole() == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Name, email and password are required"
+                    "User role is required"
             );
         }
 
         String email = user.getEmail().trim().toLowerCase();
 
-        if (userRepository.existsByEmail(email)) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Email already exists"
-            );
-        }
-
-        if (user.getPassword().length() < 8) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Password must be at least 8 characters"
-            );
-        }
+        checkEmailExists(email);
 
         user.setId(null);
+        user.setName(user.getName().trim());
         user.setEmail(email);
-
-        // Hash the password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        // Public registration always creates CUSTOMER
-        user.setRole(Role.CUSTOMER);
+        user.setStatus(UserStatus.ACTIVE);
 
         return userRepository.save(user);
     }
@@ -79,7 +84,6 @@ public class UserService {
             );
         }
 
-        // Find user by email
         String email = loginRequest.getEmail().trim().toLowerCase();
 
         User user = userRepository.findByEmail(email)
@@ -88,15 +92,21 @@ public class UserService {
                         "Invalid email or password"
                 ));
 
-        // Check password
         if (!passwordEncoder.matches(
                 loginRequest.getPassword(),
                 user.getPassword()
         )) {
-
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Invalid email or password"
+            );
+        }
+
+        // Prevent suspended users from logging in
+        if (user.getStatus() == UserStatus.SUSPENDED) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Your account has been suspended"
             );
         }
 
@@ -118,7 +128,7 @@ public class UserService {
                 ));
     }
 
-    // 6. Update user
+    // 6. Update user information
     public User updateUser(Long id, User updatedUser) {
 
         User existingUser = getUserById(id);
@@ -148,7 +158,7 @@ public class UserService {
         existingUser.setName(updatedUser.getName().trim());
         existingUser.setEmail(email);
 
-        // Update password only when a new password is provided
+        // Change password only if a new password is provided
         if (updatedUser.getPassword() != null
                 && !updatedUser.getPassword().isBlank()) {
 
@@ -167,11 +177,77 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
-    // 7. Delete user
+    // 7. Change user role
+    public User updateUserRole(Long id, Role role) {
+
+        User user = getUserById(id);
+
+        if (role == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Role is required"
+            );
+        }
+
+        user.setRole(role);
+
+        return userRepository.save(user);
+    }
+
+    // 8. Change user status
+    public User updateUserStatus(Long id, UserStatus status) {
+
+        User user = getUserById(id);
+
+        if (status == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Status is required"
+            );
+        }
+
+        user.setStatus(status);
+
+        return userRepository.save(user);
+    }
+
+    // 9. Delete user
     public void deleteUser(Long id) {
 
         User user = getUserById(id);
 
         userRepository.delete(user);
+    }
+
+    // Helper: validate required user fields
+    private void validateUser(User user) {
+
+        if (user.getName() == null || user.getName().isBlank()
+                || user.getEmail() == null || user.getEmail().isBlank()
+                || user.getPassword() == null || user.getPassword().isBlank()) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Name, email and password are required"
+            );
+        }
+
+        if (user.getPassword().length() < 8) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Password must be at least 8 characters"
+            );
+        }
+    }
+
+    // Helper: check duplicate email
+    private void checkEmailExists(String email) {
+
+        if (userRepository.existsByEmail(email)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Email already exists"
+            );
+        }
     }
 }
