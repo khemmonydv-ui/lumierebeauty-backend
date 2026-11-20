@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.flashsolution.lumierebeauty.entity.Order;
 import com.flashsolution.lumierebeauty.service.OrderService;
 
-import jakarta.validation.Valid;
-
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController 
 @RequestMapping("/api/orders")
@@ -25,8 +23,8 @@ public class OrderController {
     }
 
     @PostMapping
-    public Order addOrder(@Valid @RequestBody Order order) {
-        return OrderService.addOrder(order);
+    public Order addOrder(@RequestBody Order order) {
+        return orderService.addOrder(order);
     }
 
     @GetMapping 
