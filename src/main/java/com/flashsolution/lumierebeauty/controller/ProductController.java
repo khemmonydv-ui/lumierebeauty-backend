@@ -44,4 +44,39 @@ public class ProductController {
     ){
         return productService.getProductsByCategoryName(name);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        Product product = productService.getProductById(id);
+        if (product == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(product);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        // Same validation as create
+        if (product.getPrice() == null) {
+            return ResponseEntity.badRequest().body("Price is required.");
+        }
+        if (product.getPrice() < 0) {
+            return ResponseEntity.badRequest().body("Price cannot be negative.");
+        }
+
+        Product updated = productService.updateProduct(id, product);
+        if (updated == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        if (productService.getProductById(id) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
 }

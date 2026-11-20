@@ -13,6 +13,9 @@ public class Product {
         private Double price;
         private Integer quantity;
 
+        // Picture of the product, e.g. "/images/serum.svg" or "https://..."
+        private String imageUrl;
+
         @ManyToOne
         @JoinColumn(name = "category_id")
         private Category category;
@@ -52,6 +55,12 @@ public class Product {
         }
         public void setQuantity(Integer quantity) {
             this.quantity = quantity;
+        }
+        public String getImageUrl() {
+            return imageUrl;
+        }
+        public void setImageUrl(String imageUrl) {
+            this.imageUrl = imageUrl;
         }
         public Category getCategory() {
             return category;
