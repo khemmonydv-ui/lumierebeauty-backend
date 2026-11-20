@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface BrandRepository extends JpaRepository<Brand, Long> {
     List<Brand> findByNameContainingIgnoreCase(String name);
     List<Brand> findByDescriptionContainingIgnoreCase(String description);
+
+    // Used by DataSeeder: true if a brand with this exact name exists
+    boolean existsByName(String name);
     
     
 } 
