@@ -4,6 +4,7 @@ import com.flashsolution.lumierebeauty.entity.Product;
 import com.flashsolution.lumierebeauty.service.ProductService;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -24,10 +25,18 @@ public class ProductController {
     }
 
 
-    @PostMapping                                                                                                                            
-    @ResponseStatus(HttpStatus.CREATED)
-    public Product createProduct(@RequestBody Product product) {
-        return productService.createProduct(product);
+    @PostMapping
+    public ResponseEntity<?> createProduct(@RequestBody Product product) {
+        // Validation: price is required and cannot be negative
+        if (product.getPrice() == null) {
+            return ResponseEntity.badRequest().body("Price is required.");
+        }
+        if (product.getPrice() < 0) {
+            return ResponseEntity.badRequest().body("Price cannot be negative.");
+        }
+
+        Product saved = productService.createProduct(product);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
     @GetMapping("/category")
     public List<Product> filterByCategory(
