@@ -3,6 +3,7 @@ package com.flashsolution.lumierebeauty.controller;
 import com.flashsolution.lumierebeauty.entity.User;
 import com.flashsolution.lumierebeauty.service.UserService;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class UserController {
 
     // 1. Register a new user
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
 
         User newUser = userService.createUser(user);
 
