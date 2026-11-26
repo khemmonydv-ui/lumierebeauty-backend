@@ -29,8 +29,6 @@ public class User {
     @Column(nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
 
-    public User() {
-    }
 
     public Long getId() {
         return id;

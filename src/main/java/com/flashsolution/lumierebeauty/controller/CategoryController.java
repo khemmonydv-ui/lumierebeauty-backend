@@ -1,4 +1,3 @@
-
 package com.flashsolution.lumierebeauty.controller;
 
 import com.flashsolution.lumierebeauty.entity.Category;
@@ -43,7 +42,7 @@ public class CategoryController {
     public ResponseEntity<Category> createCategory(@RequestBody Category category) {
         Category newCategory = categoryService.createCategory(category);
         return ResponseEntity.ok(newCategory);
-    }
+    } // <-- Added missing closing brace here
 
     // PUT: Update category
     @PutMapping("/{id}")
